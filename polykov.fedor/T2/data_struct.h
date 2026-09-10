@@ -83,12 +83,19 @@ inline std::istream& operator>>(std::istream& in, DoubleLitIO&& dest)
     std::string numberPart = token.substr(0, token.size() - 1);
     size_t dotPos = numberPart.find('.');
     if (dotPos == std::string::npos) { in.setstate(std::ios::failbit); return in; }
-    if (dotPos == 0 || dotPos == numberPart.size() - 1) { in.setstate(std::ios::failbit); return in; }
+    size_t startDigits = (numberPart[0] == '-') ? 1 : 0;
+    if (dotPos <= startDigits || dotPos == numberPart.size() - 1)
+    {
+        in.setstate(std::ios::failbit); return in;
+    }
     for (size_t i = 0; i < numberPart.size(); ++i)
     {
         if (i == 0 && numberPart[i] == '-') continue;
         if (i == dotPos) continue;
-        if (!std::isdigit(numberPart[i])) { in.setstate(std::ios::failbit); return in; }
+        if (!std::isdigit(static_cast<unsigned char>(numberPart[i])))
+        {
+            in.setstate(std::ios::failbit); return in;
+        }
     }
     try { dest.ref = std::stod(numberPart); }
     catch (...) { in.setstate(std::ios::failbit); }
@@ -107,7 +114,7 @@ inline std::istream& operator>>(std::istream& in, UllHexIO&& dest)
     }
     std::string hexStr;
     char c;
-    while (std::isxdigit(in.peek())) { in.get(c); hexStr += c; }
+    while (std::isxdigit(static_cast<unsigned char>(in.peek()))) { in.get(c); hexStr += c; }
     if (hexStr.empty()) { in.setstate(std::ios::failbit); return in; }
     int next = in.peek();
     if (next != ':' && next != EOF) { in.setstate(std::ios::failbit); return in; }
@@ -154,13 +161,13 @@ inline std::istream& operator>>(std::istream& in, DataStruct& dest)
         bool error = false;
         std::string label;
         char ch;
-        if (!in.get(ch) || std::isspace(ch))
+        if (!in.get(ch) || std::isspace(static_cast<unsigned char>(ch)))
         {
             in.clear();
             continue;
         }
         label += ch;
-        while (in.get(ch) && !std::isspace(ch))
+        while (in.get(ch) && !std::isspace(static_cast<unsigned char>(ch)))
         {
             label += ch;
         }
@@ -221,13 +228,13 @@ inline std::istream& operator>>(std::istream& in, DataStruct& dest)
 
             std::string label2;
             char ch2;
-            if (!in.get(ch2) || std::isspace(ch2))
+            if (!in.get(ch2) || std::isspace(static_cast<unsigned char>(ch2)))
             {
                 error = true;
                 break;
             }
             label2 += ch2;
-            while (in.get(ch2) && !std::isspace(ch2))
+            while (in.get(ch2) && !std::isspace(static_cast<unsigned char>(ch2)))
             {
                 label2 += ch2;
             }

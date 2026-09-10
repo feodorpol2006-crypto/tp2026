@@ -22,10 +22,3 @@ int main()
 
     return 0;
 }
-
-/*asdf
-(:key1 50.0d:key2 0xFFFA:key3 "Data":)
-(:key2 0xA:key1 10.0d:key3 "Hello":)
-(:key3 "World":key1 10.0d:key2 0xB:)
-(:key1 10.0d:key2 0xA:key3 "Short":)
-(:key1 10.0d:key2 0xA:key3 "Longer":)*/

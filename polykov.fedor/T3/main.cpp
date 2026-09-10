@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <cctype>
 
 using namespace std::placeholders;
 
@@ -84,6 +85,12 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
+                    if (arg.empty() ||
+                        !std::all_of(arg.begin(), arg.end(),
+                            [](unsigned char c) { return std::isdigit(c); }))
+                    {
+                        throw std::invalid_argument("");
+                    }
                     std::size_t pos = 0;
                     std::size_t n = std::stoull(arg, &pos);
                     if (pos != arg.size())
@@ -184,6 +191,12 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
+                    if (arg.empty() ||
+                        !std::all_of(arg.begin(), arg.end(),
+                            [](unsigned char c) { return std::isdigit(c); }))
+                    {
+                        throw std::invalid_argument("");
+                    }
                     std::size_t pos = 0;
                     std::size_t n = std::stoull(arg, &pos);
                     if (pos != arg.size())

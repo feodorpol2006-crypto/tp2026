@@ -6,6 +6,10 @@
 #include <numeric>
 #include <algorithm>
 #include <functional>
+#include <cstdlib>
+#include <string>
+#include <utility>
+#include <cstddef>
 
 struct Point
 {
@@ -17,7 +21,7 @@ struct Polygon
     std::vector<Point> points;
 };
 
-std::istream& operator>>(std::istream& in, Point& p)
+inline std::istream& operator>>(std::istream& in, Point& p)
 {
     int x = 0, y = 0;
     char open, semicolon, close;
@@ -37,7 +41,7 @@ std::istream& operator>>(std::istream& in, Point& p)
     return in;
 }
 
-std::istream& operator>>(std::istream& in, Polygon& pol)
+inline std::istream& operator>>(std::istream& in, Polygon& pol)
 {
     size_t size = 0;
     if (!(in >> size) || size < 3)
@@ -67,12 +71,12 @@ std::istream& operator>>(std::istream& in, Polygon& pol)
     return in;
 }
 
-bool operator==(const Point& a, const Point& b)
+inline bool operator==(const Point& a, const Point& b)
 {
     return a.x == b.x && a.y == b.y;
 }
 
-bool operator==(const Polygon& a, const Polygon& b)
+inline bool operator==(const Polygon& a, const Polygon& b)
 {
     return a.points == b.points;
 }
@@ -98,7 +102,7 @@ struct AreaCalculator
     }
 };
 
-double getArea(const Polygon& p)
+inline double getArea(const Polygon& p)
 {
     if (p.points.size() < 3)
         return 0.0;
@@ -223,12 +227,13 @@ struct HasRightAngle
     }
 };
 
-inline void normalizePoint(Point& p)
+inline Point normalizePoint(Point p)
 {
     if (p.x > p.y)
     {
         std::swap(p.x, p.y);
     }
+    return p;
 }
 
 struct ComparePoints
@@ -250,16 +255,16 @@ struct IsPermutationOf
     explicit IsPermutationOf(const Polygon& sample)
         : target(sample)
     {
-        for (auto& pt : target.points)
-            normalizePoint(pt);
+        std::transform(target.points.begin(), target.points.end(),
+            target.points.begin(), normalizePoint);
         std::sort(target.points.begin(), target.points.end(), ComparePoints());
     }
 
     bool operator()(const Polygon& p) const
     {
         Polygon copy = p;
-        for (auto& pt : copy.points)
-            normalizePoint(pt);
+        std::transform(copy.points.begin(), copy.points.end(),
+            copy.points.begin(), normalizePoint);
         std::sort(copy.points.begin(), copy.points.end(), ComparePoints());
         return copy.points == target.points;
     }
